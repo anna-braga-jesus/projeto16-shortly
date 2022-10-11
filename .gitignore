@@ -1,0 +1,5 @@
+/node_modules
+/enums
+package-lock.json
+.env
+
