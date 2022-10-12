@@ -19,9 +19,11 @@ server.use(SignInRouter);
 
 //POST///urls/shorten
 //server.use(UrlsRouter);
-
+server.use("/status", (req,res)=>{
+res.send("Funciona");
+})
 //GET/urls/:id
-server.use(UrlsRouter);
+//server.use(UrlsRouter);
 
 //GET/urls/open/:shortUrl
 //server.use(UrlsRouter);
