@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import SignUpRouter from './Routes/SignUpRouter.js';
+import SignInRouter from'./Routes/SignInRouter.js';
+import UrlsRouter from './Routes/UrlsRouter.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -13,13 +15,13 @@ server.use([cors(), express.json()]);
 server.use(SignUpRouter);
 
 //POST/signin
-//server.use(SignInRouter);
+server.use(SignInRouter);
 
 //POST///urls/shorten
 //server.use(UrlsRouter);
 
 //GET/urls/:id
-//server.use(UrlsRouter);
+server.use(UrlsRouter);
 
 //GET/urls/open/:shortUrl
 //server.use(UrlsRouter);

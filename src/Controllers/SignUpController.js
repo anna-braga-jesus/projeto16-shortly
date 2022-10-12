@@ -4,12 +4,11 @@ import statusCodes from "../enums/statusCode.js";
 import bcrypt from "bcrypt";
 
 async function SignUp(req, res) {
-  const { Authorization } = req.header;
   const { name, email, password, confirmPassword } = req.body;
 
   try {
-    const salt = await bcrypt.genSalt();
-    const passwordHashed = await bcrypt.hash(password, salt);
+    // const salt = await bcrypt.genSalt();
+    const passwordHashed = await bcrypt.hash(password, 10);
 
     const model = SignUpSchema.validate(req.body, {
       abortEarly: false,
