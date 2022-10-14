@@ -10,6 +10,7 @@ function validateUsers(req, res, next) {
     console.log(error);
     res.sendStatus(statusCode.SERVER_ERROR);
   }
+  next()
 }
 
 export { validateUsers};

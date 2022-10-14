@@ -40,23 +40,26 @@ async function listUrlsById(req, res) {
 }
 
 async function shortUrl(req, res) {
-  const { shorturl } = req.params;
-  const body = req.body;
+  const { shortUrl } = req.params;
+  //console.log(shortUrl)
   try {
     const urlRigth = await connection.query(
       "SELECT * FROM urls WHERE shorturl = $1;",
-      [shorturl]
+      [shortUrl]
     );
 
     if (urlRigth.rows.length === 0) return res.sendStatus(statusCode.NOT_FOUND);
 
     const updateVisitCount = await connection.query(
-      'UPDATE urls SET visitcount = $1 WHERE "shorturl" = $2;',
-      [body.visitcount + 1, body.shorturl]
+      'UPDATE urls SET visitcount = visitcount+1 WHERE "shorturl" = $1;',
+      [shortUrl]
     );
-    console.log(body.VisitCount + 1, body.shorturl);
-    res.redirect([updateVisitCount.rows[0]]);
-    res.sendStatus(statusCode.OK);
+
+    
+    console.log(urlRigth)
+
+    res.redirect(urlRigth.rows[0].url);
+    //res.sendStatus(statusCode.OK);
   } catch (error) {
     console.log(error);
     res.sendStatus(statusCode.SERVER_ERROR);
@@ -67,7 +70,10 @@ async function deleteUrl() {
   const { Authorization } = req.header;
 
   try {
-    const urlDeleted = await connection.query('SELECT FROM urls WHERE id = $1;', [id]) //DELETE FROM ...
+    const urlDeleted = await connection.query(
+      "SELECT FROM urls WHERE id = $1;",
+      [id]
+    ); //DELETE FROM ...
     res.sendStatus(statusCode.NO_CONTENT);
   } catch (error) {
     console.log(error);

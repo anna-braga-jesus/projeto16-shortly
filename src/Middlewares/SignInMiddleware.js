@@ -21,19 +21,18 @@ async function searchAUser(req, res, next) {
   const { email, password } = req.body;
 
   try {
-    const users = await connection.query(
-      "SELECT * FROM users WHERE email = $1;",
-      [email]
-    );
-    if(users.rows.length === 0){
-        return res.sendStatus(statusCodes.UNAUTHORIZED);
-    }
+    const users = (
+      await connection.query("SELECT * FROM users WHERE email = $1;", [email])
+    ).rows[0];
 
-        console.log(bcrypt.compareSync(password, users.rows[0].password))
-    if (!bcrypt.compareSync(password, users.rows[0].password)) {
+    if (!users) return res.sendStatus(statusCodes.UNAUTHORIZED);
+     if (users.length === 0) {
+       return res.sendStatus(statusCodes.UNAUTHORIZED);
+     }
+    if (!bcrypt.compareSync(password, users.password)) {
       return res.sendStatus(statusCodes.UNAUTHORIZED);
     }
-    
+
     res.locals.users = users;
   } catch (error) {
     console.log(error);
