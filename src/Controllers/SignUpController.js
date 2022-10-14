@@ -7,16 +7,7 @@ async function SignUp(req, res) {
   const { name, email, password, confirmPassword } = req.body;
 
   try {
-    // const salt = await bcrypt.genSalt();
     const passwordHashed = await bcrypt.hash(password, 10);
-
-    const model = SignUpSchema.validate(req.body, {
-      abortEarly: false,
-    });
-    if (model.error) {
-      const signUpError = model.error.details.map((e) => e.message);
-      return res.status(statusCodes.UNPROCESSABLE_ENTITY).send(signUpError);
-    }
 
     const doubleEmail = await connection.query(
       "SELECT * FROM users WHERE email = $1;",

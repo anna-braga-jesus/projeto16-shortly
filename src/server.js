@@ -1,9 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import SignUpRouter from './Routes/SignUpRouter.js';
-import SignInRouter from'./Routes/SignInRouter.js';
-import UrlsRouter from './Routes/UrlsRouter.js';
-import dotenv from 'dotenv';
+import express from "express";
+import cors from "cors";
+import SignUpRouter from "./Routes/SignUpRouter.js";
+import SignInRouter from "./Routes/SignInRouter.js";
+import UrlsRouter from "./Routes/UrlsRouter.js";
+import dotenv from "dotenv";
 dotenv.config();
 
 const server = express();
@@ -18,10 +18,11 @@ server.use(SignUpRouter);
 server.use(SignInRouter);
 
 //POST///urls/shorten
-//server.use(UrlsRouter);
-server.use("/status", (req,res)=>{
-res.send("Funciona");
-})
+server.use(UrlsRouter);
+
+server.use("/status", (req, res) => {
+  res.send("Funciona");
+});
 //GET/urls/:id
 //server.use(UrlsRouter);
 
@@ -37,6 +38,6 @@ res.send("Funciona");
 //GET/ranking
 //server.use(RankingRouter);
 
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 4000;
 
-server.listen(PORT, () => console.log("Listening on port 4000..."));
+server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
