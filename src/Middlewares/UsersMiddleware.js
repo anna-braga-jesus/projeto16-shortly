@@ -16,11 +16,6 @@ async function validateUsers(req, res, next) {
     if (!findSession.rows[0]) {
       return res.sendStatus(statusCode.UNAUTHORIZED);
     };
-    //Caso o usuário não exista, responder com status code 404.
-    //De onde vem esse userId?
-    
-     //const validateUser = await connection.query('SELECT * FROM users WHERE id = $1', [userId]);
-     //if( !validateUser) return res.sendStatus(statusCode. NOT_FOUND);
     res.locals.findSession = findSession.rows[0];
     next();
   } catch (error) {

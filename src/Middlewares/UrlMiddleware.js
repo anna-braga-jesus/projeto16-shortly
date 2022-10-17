@@ -15,7 +15,7 @@ async function validateUrl(req, res, next) {
     });
     if (formatUrl.error) {
       const urlError = formatUrl.error.details.map((e) => e.message);
-      return res.send(urlError).status(statusCode.UNPROCESSABLE_ENTITY);
+      return res.status(statusCode.UNPROCESSABLE_ENTITY).send(urlError);
     }
 
     const findSession = await connection.query(
@@ -59,7 +59,7 @@ async function validateDelete(req, res, next) {
       `SELECT * FROM urls WHERE id = $1 AND "userId" = $2;`,
       [id, user.id]
     );
-    if (listOfUrls === 0) return res.send(statusCode.NOT_FOUND);
+    if (listOfUrls === 0) return res.sendStatus(statusCode.NOT_FOUND);
   } catch (error) {
     console.log(error);
     res.sendStatus(statusCode.SERVER_ERROR);

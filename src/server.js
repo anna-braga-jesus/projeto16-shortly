@@ -12,7 +12,7 @@ const server = express();
 server.use([cors(), express.json()]);
 
 server.use("/status", (req, res) => {
-  res.send("Funciona");
+  res.sendStatus("Funciona");
 });
 server.use(SignUpRouter);
 

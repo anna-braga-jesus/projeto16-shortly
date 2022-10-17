@@ -1,5 +1,4 @@
 import { connection } from "../Database/db.js";
-import SignUpSchema from "../Schemas/SignUpSchema.js";
 import statusCodes from "../enums/statusCode.js";
 import bcrypt from "bcrypt";
 

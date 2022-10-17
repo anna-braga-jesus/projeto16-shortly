@@ -28,7 +28,7 @@ async function listUrlsById(req, res) {
       [id]
     );
     if (list.rows.length === 0) return res.sendStatus(statusCode.NOT_FOUND);
-    res.send(list.rows[0]).status(statusCode.OK);
+    res.status(statusCode.OK).send(list.rows[0]);
   } catch (error) {
     console.log(error);
     res.sendStatus(statusCode.SERVER_ERROR);

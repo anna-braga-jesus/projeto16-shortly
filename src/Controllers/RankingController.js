@@ -19,7 +19,7 @@ async function listRanking(req, res) {
     res.status(statusCode.OK).send(ranking);
   } catch (error) {
     console.log(error);
-    res.send(statusCode.SERVER_ERROR);
+    res.sendStatus(statusCode.SERVER_ERROR);
   }
 }
 

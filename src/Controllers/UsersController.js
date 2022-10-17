@@ -27,10 +27,10 @@ async function listUsers(req, res) {
 
     const hasUrl = usersMe.rows[0].shortenedUrls[0].id 
     if (hasUrl !== null) {
-      return res.send(usersMe.rows[0]).status(statusCode.OK);
+      return res.status(statusCode.OK).send(usersMe.rows[0]);
     } else {
       usersMe.rows.map( (value)=> value.shortenedUrls=[])
-      return res.send(usersMe.rows[0]).status(statusCode.OK);
+      return res.status(statusCode.OK).send(usersMe.rows[0]);
     }
   } catch (error) {
     console.log(error);
