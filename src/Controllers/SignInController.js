@@ -15,13 +15,6 @@ async function SignIn(req, res) {
       "SELECT * FROM sessions WHERE token = $1;",
       [token]
     );
-    const verifyToken = jwt.verify(
-      token,
-      process.env.TOKEN_SECRET,
-      function (error, decoded) {
-        if (error) return res.sendStatus(statusCodes.UNAUTHORIZED);
-      }
-    );
     const login = await connection.query(
       `INSERT INTO sessions (token, "userId") VALUES ($1, $2)`,
       [token, users.id]
