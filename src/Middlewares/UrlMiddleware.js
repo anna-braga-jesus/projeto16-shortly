@@ -3,7 +3,7 @@ import statusCode from "../enums/statusCode.js";
 import UrlSchema from "../Schemas/UrlSchema.js";
 
 async function validateUrl(req, res, next) {
-  const { url, shorturl, email } = req.body;
+  const { url } = req.body;
   const token = req.headers.authorization?.replace("Bearer ", "");
   try {
     if (!token) {
@@ -15,7 +15,7 @@ async function validateUrl(req, res, next) {
     });
     if (formatUrl.error) {
       const urlError = formatUrl.error.details.map((e) => e.message);
-      return res.status(statusCode.UNPROCESSABLE_ENTITY).send(urlError);
+      return res.send(urlError).status(statusCode.UNPROCESSABLE_ENTITY);
     }
 
     const findSession = await connection.query(
@@ -25,43 +25,69 @@ async function validateUrl(req, res, next) {
     if (!findSession.rows[0]) {
       return res.sendStatus(statusCode.UNAUTHORIZED);
     }
-    let url;
+
     const findUrl = await connection.query(
-      "SELECT * FROM urls  WHERE url = $1 AND userid = $2;",
-      [url, findSession.userid]
+      `SELECT * FROM urls WHERE url = $1 AND "userId" = $2;`,
+      [url, findSession.rows[0].userId]
     );
-    if (findUrl.rows[0]) {
+    if (findUrl.rowCount > 0) {
       return res.sendStatus(statusCode.CONFLICT);
     }
-    res.locals.findUrl = findUrl
-    res.locals.findSession= findSession
-  
+    res.locals.findUrl = findUrl;
+    res.locals.findSession = findSession.rows[0];
   } catch (error) {
     console.log(error);
     res.sendStatus(statusCode.SERVER_ERROR);
   }
-  console.log("Qualquer coisa")
   next();
 }
-async function validateDelete(req, res, next){
-  const id  = req.params.id;
-  console.log("Esse é o id:",id);
-try {
-const existsShortUrl = await connection.query('SELECT * FROM links WHERE id = $1;', [id]).rows[0];
 
-  if (existsShortUrl.length === 0) {
-    return res.sendStatus(statusCode.NOT_FOUND);
+async function validateDelete(req, res, next) {
+  const id = req.params.id;
+  const user = res.locals.user;
+  try {
+    const findShortUrl = await connection.query(
+      `SELECT * FROM urls WHERE id = $1;`,
+      [id]
+    );
+    const existsShortUrl = findShortUrl.rows[0];
+
+    if (!existsShortUrl === 0) {
+      return res.sendStatus(statusCode.NOT_FOUND);
+    }
+    const listOfUrls = await connection.query(
+      `SELECT * FROM urls WHERE id = $1 AND "userId" = $2;`,
+      [id, user.id]
+    );
+    if (listOfUrls === 0) return res.send(statusCode.NOT_FOUND);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(statusCode.SERVER_ERROR);
   }
-
-  if (existsShortUrl[0].userId !== user.id) {
-    return res.sendStatus(statusCode.UNAUTHORIZED);
-  }
-res.send(id)
-} catch (error) {
-  console.log(error);
-  res.send(statusCode.SERVER_ERROR);
-}
-
   next();
 }
-export { validateUrl, validateDelete};
+
+async function sumViews(req, res, next) {
+  const user = res.locals.user;
+
+  try {
+    const all = await connection.query(
+      `SELECT "visitCount" FROM urls WHERE "userId" = $1;`,
+      [user.id]
+    );
+    const allViews = all.rows;
+    console.log(allViews);
+    let sum = 0;
+    allViews.map((element) => {
+      sum += element.visitCount;
+    });
+
+    res.locals.sum = sum;
+    next();
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(statusCode.SERVER_ERROR);
+  }
+}
+
+export { validateUrl, validateDelete, sumViews };

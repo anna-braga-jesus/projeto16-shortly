@@ -3,40 +3,26 @@ import cors from "cors";
 import SignUpRouter from "./Routes/SignUpRouter.js";
 import SignInRouter from "./Routes/SignInRouter.js";
 import UrlsRouter from "./Routes/UrlsRouter.js";
+import UsersRouter from "./Routes/UsersRouter.js";
+import RankingRouter from "./Routes/RankingRouter.js";
 import dotenv from "dotenv";
 dotenv.config();
 
 const server = express();
 server.use([cors(), express.json()]);
 
-
-// =========================================ROTAS===================================================
-//POST/signup
-server.use(SignUpRouter);
-
-//POST/signin
-server.use(SignInRouter);
-
-//POST///urls/shorten
-server.use(UrlsRouter);
-
 server.use("/status", (req, res) => {
   res.send("Funciona");
 });
-//GET/urls/:id
-//server.use(UrlsRouter);
+server.use(SignUpRouter);
 
-//GET/urls/open/:shortUrl
-//server.use(UrlsRouter);
+server.use(SignInRouter);
 
-//DELETE/urls/:id
-//server.use(UrlsRouter);
+server.use(UrlsRouter);
 
-//GET/users/me
-//server.use(UrlsRouter);
+server.use(UsersRouter);
 
-//GET/ranking
-//server.use(RankingRouter);
+server.use(RankingRouter);
 
 const PORT = process.env.PORT || 4000;
 

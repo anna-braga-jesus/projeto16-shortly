@@ -4,18 +4,15 @@ import { nanoid } from "nanoid";
 
 async function createUrlShorten(req, res) {
   const body = req.body;
-  const findUrl = res.locals.findUrl;
-  const findSession = res.locals.findSession.rows[0].userId;
-  console.log(
-    "🚀 ~ file: UrlController.js ~ line 9 ~ createUrlShorten ~ findSession",
-    findSession
-  );
+  const findSession = res.locals.findSession;
+
   try {
-    const shorturl = nanoid();
+    const shorturl = nanoid(8);
     await connection.query(
-      "INSERT INTO urls (url, shorturl,userid, visitcount, createdat) VALUES ($1, $2, $3, $4, $5);",
-      [body.url, shorturl, findSession, 0, new Date().toUTCString()]
+      `INSERT INTO urls (url, "shortUrl", "userId", "visitCount") VALUES ($1, $2, $3, $4);`,
+      [body.url, shorturl, findSession.userId, 0]
     );
+
     return res.status(statusCode.OK).send({ shorturl: shorturl });
   } catch (error) {
     console.log(error);
@@ -27,12 +24,11 @@ async function listUrlsById(req, res) {
   const { id } = req.params;
   try {
     const list = await connection.query(
-      `SELECT id, shorturl, url FROM urls WHERE id = $1;`,
+      `SELECT id, "shortUrl", url FROM urls WHERE id = $1;`,
       [id]
     );
-    console.log(Number(id), shortUrl, list.rows[0]);
     if (list.rows.length === 0) return res.sendStatus(statusCode.NOT_FOUND);
-    res.status(statusCode.OK).send(list.rows[0]);
+    res.send(list.rows[0]).status(statusCode.OK);
   } catch (error) {
     console.log(error);
     res.sendStatus(statusCode.SERVER_ERROR);
@@ -41,39 +37,32 @@ async function listUrlsById(req, res) {
 
 async function shortUrl(req, res) {
   const { shortUrl } = req.params;
-  //console.log(shortUrl)
   try {
-    const urlRigth = await connection.query(
-      "SELECT * FROM urls WHERE shorturl = $1;",
+    const urlRigth = (
+      await connection.query(`SELECT * FROM urls WHERE "shortUrl" = $1;`, [
+        shortUrl,
+      ])
+    ).rows[0];
+
+    if (!urlRigth) {
+      return res.sendStatus(statusCode.NOT_FOUND);
+    }
+
+    await connection.query(
+      `UPDATE urls SET "visitCount" = "visitCount" + 1 WHERE "shortUrl" = $1;`,
       [shortUrl]
     );
-
-    if (urlRigth.rows.length === 0) return res.sendStatus(statusCode.NOT_FOUND);
-
-    const updateVisitCount = await connection.query(
-      'UPDATE urls SET visitcount = visitcount+1 WHERE "shorturl" = $1;',
-      [shortUrl]
-    );
-
-    
-    console.log(urlRigth)
-
-    res.redirect(urlRigth.rows[0].url);
-    //res.sendStatus(statusCode.OK);
+    res.redirect([urlRigth.url]);
   } catch (error) {
     console.log(error);
     res.sendStatus(statusCode.SERVER_ERROR);
   }
 }
 
-async function deleteUrl() {
-  const { Authorization } = req.header;
-
+async function deleteUrl(req, res) {
+  const id = req.params.id;
   try {
-    const urlDeleted = await connection.query(
-      "SELECT FROM urls WHERE id = $1;",
-      [id]
-    ); //DELETE FROM ...
+    await connection.query("DELETE FROM urls WHERE id = $1;", [id]);
     res.sendStatus(statusCode.NO_CONTENT);
   } catch (error) {
     console.log(error);
