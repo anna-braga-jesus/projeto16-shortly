@@ -22,8 +22,6 @@ async function SignIn(req, res) {
         if (error) return res.sendStatus(statusCodes.UNAUTHORIZED);
       }
     );
-    //if (!verifyToken) return res.sendStatus(statusCodes.UNAUTHORIZED);
-
     const login = await connection.query(
       `INSERT INTO sessions (token, "userId") VALUES ($1, $2)`,
       [token, users.id]
