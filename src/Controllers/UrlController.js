@@ -52,6 +52,10 @@ async function shortUrl(req, res) {
       `UPDATE urls SET "visitCount" = "visitCount" + 1 WHERE "shortUrl" = $1;`,
       [shortUrl]
     );
+    await connection.query(
+      `UPDATE users SET view = view + 1 WHERE id = $1;`,
+      [urlRigth.userId]
+    );
     res.redirect([urlRigth.url]);
   } catch (error) {
     console.log(error);

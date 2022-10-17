@@ -76,7 +76,6 @@ async function sumViews(req, res, next) {
       [user.id]
     );
     const allViews = all.rows;
-    console.log(allViews);
     let sum = 0;
     allViews.map((element) => {
       sum += element.visitCount;

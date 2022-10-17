@@ -6,14 +6,10 @@ async function listUsers(req, res) {
   const user = res.locals.user;
 
   try {
-    await connection.query(`UPDATE users SET view = $1 WHERE id = $2;`, [
-      sum,
-      user.id,
-    ]);
     
     const usersMe = await connection.query(
       `
-      SELECT users.id, users.name, users.view , json_agg(
+      SELECT users.id, users.name, users.view, json_agg(
       json_build_object( 'id',
       urls.id,
       'shortUrl', urls."shortUrl",

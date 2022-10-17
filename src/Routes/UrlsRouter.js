@@ -5,7 +5,7 @@ import { validateToken } from "../Middlewares/validateToken.js";
 const router = express.Router();
 
 //GET/urls/:id
-router.post("/urls/shorten",validateUrl, createUrlShorten)
+router.post("/urls/shorten",validateToken, validateUrl, createUrlShorten)
 router.get("/urls/:id", listUrlsById);
 router.get("/urls/open/:shortUrl", shortUrl)
 router.delete("/urls/:id",validateToken,validateDelete, deleteUrl)

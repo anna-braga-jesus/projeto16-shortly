@@ -7,7 +7,7 @@ async function listRanking(req, res) {
   SELECT users.id, 
   users.name,
   COUNT(urls) AS "linksCount",
-  SUM(users.view) AS "visitCount"
+  users.view AS "visitCount"
   FROM users
   LEFT JOIN urls ON urls."userId" = users.id
   GROUP BY users.id
